@@ -1,0 +1,121 @@
+version: '3.9'
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: durka
+      POSTGRES_DB: e-commerce-database
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - e-commerce-network
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth
+    environment:
+      - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - e-commerce-network    
+    
+  cart-service:
+    build:
+      context: ./cart-service
+      dockerfile: Dockerfile
+    container_name: cart
+    environment:
+      - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    networks:
+      - e-commerce-network
+  
+  catalog-service:
+    build:
+      context: ./catalog-service
+      dockerfile: Dockerfile
+    container_name: catalog
+    environment:
+      - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+    networks:
+      - e-commerce-network
+  
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: notification
+    environment:
+      - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres
+    networks:
+      - e-commerce-network
+  
+
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    container_name: order
+    environment:
+      - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
+    ports:
+      - "8084:8084"
+    depends_on:
+      - postgres
+    networks:
+      - e-commerce-network
+  
+  payment-service:
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    container_name: payment
+    environment:
+      - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
+    ports:
+      - "8085:8085"
+    depends_on:
+      - postgres
+    networks:
+      - e-commerce-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - e-commerce-network
+
+volumes:
+  postgres_data:
+
+networks:
+  e-commerce-network:
+    driver: bridge
+      
