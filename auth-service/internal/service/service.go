@@ -26,12 +26,12 @@ func (s *ServiceManager) Login(user models.User) (string, error) {
 	storedUser, err := s.repo.GetUser(user.Email)
 	if err != nil {
 		log.Printf("Failed to get user: %v", err)
-		return "", err
+		return "", fmt.Errorf("not found")
 	}
 
 	if err := comparePasswords(storedUser.Password, user.Password); err != nil {
 		log.Printf("Failed to compare passwords: %v", err)
-		return "", err
+		return "error", err
 	}
 
 	token, err := s.generateJWT(storedUser.ID)
