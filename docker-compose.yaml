@@ -24,6 +24,7 @@ services:
     container_name: auth
     environment:
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
+      - JWT_SECRET=super-puper-ultra-top-secret
     ports:
       - "8080:8080"
     depends_on:
