@@ -4,6 +4,7 @@ import (
 	"auth-service/internal/models"
 	"database/sql"
 	"log"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -14,6 +15,14 @@ type Postgres struct {
 
 func NewPostgres(db *sql.DB) *Postgres {
 	return &Postgres{db: db}
+}
+
+func ConnectToDB() (*sql.DB, error) {
+	db, err := sql.Open("postgres", os.Getenv("DB_URL"))
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
 }
 
 func (p *Postgres) CreateUser(user models.User) error {

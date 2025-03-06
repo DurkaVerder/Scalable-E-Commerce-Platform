@@ -8,7 +8,12 @@ import (
 )
 
 func main() {
-	postgres := postgres.NewPostgres(nil)
+	db, err := postgres.ConnectToDB()
+	if err != nil {
+		panic(err)
+	}
+
+	postgres := postgres.NewPostgres(db)
 
 	service := service.NewServiceManager(postgres)
 
