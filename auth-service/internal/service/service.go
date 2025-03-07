@@ -12,6 +12,8 @@ import (
 type Service interface {
 	Login(user models.User) (string, error)
 	Register(user models.User) error
+	ValidateJWT(token string) error
+	GetUserIdFromToken(token string) (int, error)
 }
 
 type ServiceManager struct {
@@ -44,6 +46,11 @@ func (s *ServiceManager) Login(user models.User) (string, error) {
 }
 
 func (s *ServiceManager) Register(user models.User) error {
+	_, err := s.repo.GetUser(user.Email)
+	if err == nil {
+		return fmt.Errorf("user already exists")
+	}
+
 	if !s.validPassword(user.Password) {
 		return fmt.Errorf("invalid password")
 	}

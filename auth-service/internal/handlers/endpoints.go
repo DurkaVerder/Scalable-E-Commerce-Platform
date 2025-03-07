@@ -46,3 +46,23 @@ func (h *HandlersManager) HandlerRegister(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "user registered"})
 }
+
+func (h *HandlersManager) HandlerValidateToken(ctx *gin.Context) {
+	token := ctx.GetHeader("Authorization")
+
+	if err := h.service.ValidateJWT(token); err != nil {
+		ctx.JSON(http.StatusNonAuthoritativeInfo, gin.H{"error": "user not authorized"})
+		return
+	}
+
+	userID, err := h.service.GetUserIdFromToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "user authorized",
+		"user_id": userID,
+	})
+}

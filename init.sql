@@ -3,8 +3,8 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -82,8 +82,8 @@ CREATE TABLE product_categories (
     CONSTRAINT unique_product_category UNIQUE (product_id, category_id)
 );
 
-CREATE INDEX idx_product_categories_category_id ON product_categories(category_id);
-CREATE INDEX idx_cart_items_cart_id ON cart_items(cart_id);
-CREATE INDEX idx_order_items_order_id ON order_items(order_id);
-CREATE INDEX idx_order_user_id ON orders(user_id);
-CREATE INDEX idx_payment_order_id ON payments(user_id);
+-- CREATE INDEX idx_product_categories_category_id ON product_categories(category_id);
+-- CREATE INDEX idx_cart_items_cart_id ON cart_items(cart_id);
+-- CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+-- CREATE INDEX idx_order_user_id ON orders(user_id);
+-- CREATE INDEX idx_payment_order_id ON payments(user_id);

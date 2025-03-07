@@ -9,6 +9,7 @@ import (
 type Handlers interface {
 	HandlerLogin(ctx *gin.Context)
 	HandlerRegister(ctx *gin.Context)
+	HandlerValidateToken(ctx *gin.Context)
 }
 
 type HandlersManager struct {
