@@ -26,7 +26,7 @@ func (s *Server) initRoutes() {
 func (s *Server) Run() {
 	s.initRoutes()
 
-	if err := s.r.Run(); err != nil {
+	if err := s.r.Run(":8080"); err != nil {
 		panic(err)
 	}
 }
