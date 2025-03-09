@@ -5,6 +5,7 @@ import (
 	"auth-service/internal/repository/postgres"
 	"auth-service/internal/server"
 	"auth-service/internal/service"
+	"os"
 )
 
 func main() {
@@ -21,5 +22,5 @@ func main() {
 
 	server := server.NewServer(handlers)
 
-	server.Run()
+	server.Start(os.Getenv("PORT"))
 }

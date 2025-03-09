@@ -23,10 +23,10 @@ func (s *Server) initRoutes() {
 	auth.GET("/validate", s.handlers.HandlerValidateToken)
 }
 
-func (s *Server) Run() {
+func (s *Server) Start(port string) {
 	s.initRoutes()
 
-	if err := s.r.Run(":8080"); err != nil {
+	if err := s.r.Run(port); err != nil {
 		panic(err)
 	}
 }
