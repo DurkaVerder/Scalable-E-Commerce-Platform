@@ -2,6 +2,7 @@ package main
 
 import (
 	"cart-service/internal/handlers"
+	elk "cart-service/internal/logs"
 	"cart-service/internal/repository/postgres"
 	"cart-service/internal/server"
 	"cart-service/internal/service"
@@ -28,4 +29,8 @@ func main() {
 
 	server.Start(os.Getenv("PORT"))
 
+	elk.Log.Info("Server started at port", map[string]interface{}{
+		"method": "Start",
+		"action": "starting server",
+	})
 }

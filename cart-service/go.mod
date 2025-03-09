@@ -3,8 +3,10 @@ module cart-service
 go 1.23.3
 
 require (
+	github.com/bshuster-repo/logrus-logstash-hook v1.1.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/lib/pq v1.10.9
+	github.com/sirupsen/logrus v1.9.3
 )
 
 require (

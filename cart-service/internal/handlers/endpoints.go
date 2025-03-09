@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	elk "cart-service/internal/logs"
 	"cart-service/internal/models"
 	"net/http"
 	"strconv"
@@ -57,6 +58,10 @@ func (h *HandlersManager) HandlerDeleteProduct(c *gin.Context) {
 
 	productID, err := strconv.Atoi(c.Param("product_id"))
 	if err != nil {
+		elk.Log.Error("Failed to convert the product ID to an integer: "+err.Error(), map[string]interface{}{
+			"method": "HandlerDeleteProduct",
+			"action": "converting the product ID to an integer",
+		})
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid product ID"})
 		return
 	}

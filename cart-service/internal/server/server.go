@@ -2,6 +2,7 @@ package server
 
 import (
 	"cart-service/internal/handlers"
+	elk "cart-service/internal/logs"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,5 +35,14 @@ func (s *Server) configureRouter() {
 // Start starts the server
 func (s *Server) Start(port string) {
 	s.configureRouter()
-	s.r.Run(port)
+	if err := s.r.Run(port); err != nil {
+		elk.Log.Error("Server started at port "+port, map[string]interface{}{
+			"method": "Start",
+			"action": "starting server",
+			"error":  err,
+			"port":   port,
+		})
+		panic(err)
+	}
+
 }
