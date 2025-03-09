@@ -2,12 +2,13 @@
 package service
 
 import (
-	elk "cart-service/pkg/logs"
-	"cart-service/internal/models"
-	"cart-service/internal/repository"
 	"database/sql"
 	"fmt"
 	"strconv"
+
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/models"
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/repository"
+	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/pkg/logs"
 
 	"github.com/gin-gonic/gin"
 )

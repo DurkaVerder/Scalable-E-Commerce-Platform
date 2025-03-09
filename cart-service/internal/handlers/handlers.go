@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"cart-service/internal/service"
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
