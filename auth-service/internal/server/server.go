@@ -15,17 +15,18 @@ func NewServer(handlers handlers.Handlers) *Server {
 	return &Server{handlers: handlers}
 }
 
-func (s *Server) init() {
+func (s *Server) initRoutes() {
 	s.r = gin.Default()
-
-	s.r.POST("/login", s.handlers.HandlerLogin)
-	s.r.POST("/register", s.handlers.HandlerRegister)
+	auth := s.r.Group("/auth")
+	auth.POST("/login", s.handlers.HandlerLogin)
+	auth.POST("/register", s.handlers.HandlerRegister)
+	auth.GET("/validate", s.handlers.HandlerValidateToken)
 }
 
-func (s *Server) Run() {
-	s.init()
+func (s *Server) Start(port string) {
+	s.initRoutes()
 
-	if err := s.r.Run(); err != nil {
+	if err := s.r.Run(port); err != nil {
 		panic(err)
 	}
 }

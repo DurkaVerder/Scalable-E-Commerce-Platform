@@ -34,13 +34,12 @@ func (s *ServiceManager) generateJWT(userId int) (string, error) {
 
 }
 
-func (s *ServiceManager) validateJWT(token string) error {
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(os.Getenv("JWT_SECRET")), nil
-	})
+func (s *ServiceManager) ValidateJWT(token string) error {
+	if token == "" {
+		return fmt.Errorf("token is empty")
+	}
+
+	parsedToken, err := s.parseToken(token)
 	if err != nil {
 		return err
 	}
@@ -54,4 +53,33 @@ func (s *ServiceManager) validateJWT(token string) error {
 	}
 
 	return nil
+}
+
+func (s *ServiceManager) parseToken(token string) (*jwt.Token, error) {
+	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return parsedToken, err
+}
+
+func (s *ServiceManager) GetUserIdFromToken(token string) (int, error) {
+	parsedToken, err := s.parseToken(token)
+	if err != nil {
+		return -1, err
+	}
+
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return 0, fmt.Errorf("invalid token")
+	}
+
+	userId := int(claims["user_id"].(float64))
+	return userId, nil
 }
