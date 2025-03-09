@@ -2,7 +2,7 @@
 package service
 
 import (
-	elk "cart-service/internal/logs"
+	elk "cart-service/pkg/logs"
 	"cart-service/internal/models"
 	"cart-service/internal/repository"
 	"database/sql"

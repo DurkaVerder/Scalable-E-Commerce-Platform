@@ -2,7 +2,7 @@ package main
 
 import (
 	"cart-service/internal/handlers"
-	elk "cart-service/internal/logs"
+	elk "cart-service/pkg/logs"
 	"cart-service/internal/repository/postgres"
 	"cart-service/internal/server"
 	"cart-service/internal/service"

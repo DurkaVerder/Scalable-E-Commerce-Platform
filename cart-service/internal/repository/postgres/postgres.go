@@ -3,7 +3,7 @@
 package postgres
 
 import (
-	elk "cart-service/internal/logs"
+	elk "cart-service/pkg/logs"
 	"cart-service/internal/models"
 	"database/sql"
 

@@ -2,7 +2,7 @@ package server
 
 import (
 	"cart-service/internal/handlers"
-	elk "cart-service/internal/logs"
+	elk "cart-service/pkg/logs"
 
 	"github.com/gin-gonic/gin"
 )
