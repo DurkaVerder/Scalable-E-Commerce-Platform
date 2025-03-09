@@ -1,8 +1,8 @@
 package server
 
 import (
-	"cart-service/internal/handlers"
-	elk "cart-service/pkg/logs"
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/handlers"
+	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/pkg/logs"
 
 	"github.com/gin-gonic/gin"
 )

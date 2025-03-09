@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	elk "cart-service/pkg/logs"
-	"cart-service/internal/models"
 	"net/http"
 	"strconv"
+
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/models"
+	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/pkg/logs"
 
 	"github.com/gin-gonic/gin"
 )

@@ -3,9 +3,10 @@
 package postgres
 
 import (
-	elk "cart-service/pkg/logs"
-	"cart-service/internal/models"
 	"database/sql"
+
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/models"
+	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/pkg/logs"
 
 	_ "github.com/lib/pq"
 )

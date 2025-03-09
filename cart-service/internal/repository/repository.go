@@ -1,7 +1,7 @@
 // Package: repository is an interface that defines the methods that a repository must implement to work with the cart service.
 package repository
 
-import "cart-service/internal/models"
+import "github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/models"
 
 // Repository is an interface that defines the methods that a repository must implement to work with the cart service.
 type Repository interface {
@@ -10,4 +10,3 @@ type Repository interface {
 	DeleteProductFromCart(userID, productID int) error
 	UpdateProductQuantity(userID, productID, quantity int) error
 }
-

@@ -1,12 +1,13 @@
 package main
 
 import (
-	"cart-service/internal/handlers"
-	elk "cart-service/pkg/logs"
-	"cart-service/internal/repository/postgres"
-	"cart-service/internal/server"
-	"cart-service/internal/service"
 	"os"
+
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/handlers"
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/repository/postgres"
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/server"
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/service"
+	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/pkg/logs"
 
 	"github.com/gin-gonic/gin"
 )

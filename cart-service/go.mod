@@ -1,4 +1,4 @@
-module cart-service
+module github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service
 
 go 1.23.3
 
