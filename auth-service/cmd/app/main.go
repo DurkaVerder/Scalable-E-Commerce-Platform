@@ -1,11 +1,12 @@
 package main
 
 import (
-	"auth-service/internal/handlers"
-	"auth-service/internal/repository/postgres"
-	"auth-service/internal/server"
-	"auth-service/internal/service"
 	"os"
+
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/handlers"
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/repository/postgres"
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/server"
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/service"
 )
 
 func main() {

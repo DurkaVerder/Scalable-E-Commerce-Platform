@@ -1,7 +1,7 @@
 package server
 
 import (
-	"auth-service/internal/handlers"
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/handlers"
 
 	"github.com/gin-gonic/gin"
 )

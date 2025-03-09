@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"auth-service/internal/models"
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
