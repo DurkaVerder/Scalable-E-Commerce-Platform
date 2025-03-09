@@ -10,6 +10,7 @@ type Handlers interface {
 	HandlerAddProduct(ctx *gin.Context)
 	HandlerGetCart(ctx *gin.Context)
 	HandlerDeleteProduct(ctx *gin.Context)
+	HandlerUpdateProduct(ctx *gin.Context)
 }
 
 type HandlersManager struct {
