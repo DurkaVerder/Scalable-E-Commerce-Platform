@@ -1,8 +1,15 @@
+// Package: service provides the business logic for the cart service.
 package service
 
 import (
 	"cart-service/internal/models"
 	"cart-service/internal/repository"
+	"database/sql"
+	"fmt"
+	"log"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Service interface {
@@ -10,28 +17,78 @@ type Service interface {
 	AddProductToCart(userID, productID, quantity int) error
 	RemoveProductFromCart(userID, productID int) error
 	UpdateProductQuantity(userID, productID, quantity int) error
+	GetUserID(ctx *gin.Context) (int, error)
 }
 
+// ServiceManager is a struct that implements the Service interface.
 type ServiceManager struct {
 	repo repository.Repository
 }
 
+// NewServiceManager creates a new service manager.
 func NewServiceManager(repo repository.Repository) *ServiceManager {
 	return &ServiceManager{repo: repo}
 }
 
+// GetCart returns the cart of a user.
 func (s *ServiceManager) GetCart(userID int) ([]models.Product, error) {
-	return nil, nil
+	products, err := s.repo.GetCart(userID)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
+		log.Println("Error getting cart from repository: ", err)
+		return nil, err
+	}
+
+	return products, nil
 }
 
+// AddProductToCart adds a product to the cart.
 func (s *ServiceManager) AddProductToCart(userID, productID, quantity int) error {
+	if err := s.repo.AddProductToCart(userID, productID, quantity); err != nil {
+		log.Println("Error adding product to cart in repository: ", err)
+		return err
+	}
+
 	return nil
 }
 
+// RemoveProductFromCart removes a product from the cart.
 func (s *ServiceManager) RemoveProductFromCart(userID, productID int) error {
+	if err := s.repo.DeleteProductFromCart(userID, productID); err != nil {
+		log.Println("Error removing product from cart in repository: ", err)
+		return err
+	}
+
 	return nil
 }
 
+// UpdateProductQuantity updates the quantity of a product in the cart.
+// If the quantity is 0, the product is removed from the cart.
 func (s *ServiceManager) UpdateProductQuantity(userID, productID, quantity int) error {
+	if quantity == 0 {
+		return s.RemoveProductFromCart(userID, productID)
+	}
+
+	if err := s.repo.UpdateProductQuantity(userID, productID, quantity); err != nil {
+		log.Println("Error updating product quantity in repository: ", err)
+		return err
+	}
+
 	return nil
+}
+
+// GetUserID returns the user ID from the request context.
+func (s *ServiceManager) GetUserID(ctx *gin.Context) (int, error) {
+	userID := ctx.GetHeader("user_id")
+	if userID == "" {
+		return -1, fmt.Errorf("user_id header is missing")
+	}
+
+	id, err := strconv.Atoi(userID)
+	if err != nil {
+		log.Println("Error converting user id to int: ", err)
+		return -1, err
+	}
+	return id, nil
 }

@@ -6,11 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Server represents the server
 type Server struct {
 	handlers handlers.Handlers
 	r        *gin.Engine
 }
 
+// NewServer creates a new server
 func NewServer(handlers handlers.Handlers, engine *gin.Engine) *Server {
 	return &Server{
 		handlers: handlers,
@@ -18,6 +20,7 @@ func NewServer(handlers handlers.Handlers, engine *gin.Engine) *Server {
 	}
 }
 
+// configureRouter configures the routes
 func (s *Server) configureRouter() {
 	cart := s.r.Group("/cart")
 	{
@@ -28,7 +31,8 @@ func (s *Server) configureRouter() {
 	}
 }
 
-func (s *Server) Start() {
+// Start starts the server
+func (s *Server) Start(port string) {
 	s.configureRouter()
-	s.r.Run(":8081")
+	s.r.Run(port)
 }

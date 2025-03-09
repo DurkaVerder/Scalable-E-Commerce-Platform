@@ -1,7 +1,9 @@
 package postgres
 
+// Queries
 const (
-	getCartQuery = `SELECT products.name, products.price, products.description, cart_item.quantity 
+	
+	getCartQuery = `SELECT products.id, products.name, products.price, products.description, cart_item.quantity 
 	FROM cart_item
 	JOIN products ON cart_item.product_id = products.id
 	JOIN carts ON cart_item.cart_id = carts.id
