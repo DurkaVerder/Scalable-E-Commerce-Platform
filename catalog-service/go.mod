@@ -5,6 +5,7 @@ go 1.23.3
 require github.com/gin-gonic/gin v1.10.0
 
 require (
+	github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service v0.0.0-20250309175318-62ad60107faa // indirect
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
