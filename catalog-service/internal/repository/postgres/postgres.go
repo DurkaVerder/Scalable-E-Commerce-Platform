@@ -19,12 +19,7 @@ func ConnectDB(connectionString string) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	err = db.Ping()
-	if err != nil {
-		return nil, err
-	}
-
+	
 	return db, nil
 }
 
@@ -39,5 +34,3 @@ func (p *Postgres) GetProductById(id int) (models.Product, error) {
 func (p *Postgres) GetProductsByCategory(category string) ([]models.Product, error) {
 	return nil, nil
 }
-
-
