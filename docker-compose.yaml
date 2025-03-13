@@ -102,8 +102,14 @@ services:
       dockerfile: Dockerfile
     container_name: notification
     environment:
+      - KAFKA_BROKER=kafka:9092
+      - KAFKA_TOPIC=notification
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - PORT=:8083
+      - MAIL=hotelbooking02@mail.ru
+      - EMAIL_PASSWORD=hPWFLzDD5mqWMPy1G1ty
+      - SIZE_CHAN=50
+      - COUNT_WORKER=5
     ports:
       - "8083:8083"
     depends_on:

@@ -1,10 +1,11 @@
 package postgres
 
 import (
-	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/models"
 	"database/sql"
-	"log"
 	"os"
+
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/models"
+	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/pkg/logs"
 
 	_ "github.com/lib/pq"
 )
@@ -20,6 +21,11 @@ func NewPostgres(db *sql.DB) *Postgres {
 func ConnectToDB() (*sql.DB, error) {
 	db, err := sql.Open("postgres", os.Getenv("DB_URL"))
 	if err != nil {
+		elk.Log.Error("Failed to connect to database", map[string]interface{}{
+			"method": "ConnectToDB",
+			"action": "connect_to_db",
+			"error":  err,
+		})
 		return nil, err
 	}
 	return db, nil
@@ -27,7 +33,11 @@ func ConnectToDB() (*sql.DB, error) {
 
 func (p *Postgres) CreateUser(user models.User) error {
 	if _, err := p.db.Exec(createUserQuery, user.Username, user.Email, user.Password); err != nil {
-		log.Printf("Failed to create user: %v", err)
+		elk.Log.Error("Failed to create user", map[string]interface{}{
+			"method": "CreateUser",
+			"action": "create_user",
+			"error":  err,
+		})
 		return err
 	}
 
@@ -38,7 +48,11 @@ func (p *Postgres) GetUser(email string) (models.User, error) {
 	var user models.User
 	user.Email = email
 	if err := p.db.QueryRow(getUserQuery, email).Scan(&user.ID, &user.Username, &user.Password); err != nil {
-		log.Printf("Failed to get user: %v", err)
+		elk.Log.Error("Failed to get user", map[string]interface{}{
+			"method": "GetUser",
+			"action": "get_user",
+			"error":  err,
+		})
 		return models.User{}, err
 	}
 
