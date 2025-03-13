@@ -2,11 +2,17 @@ package service
 
 import (
 	"context"
+	"os"
 
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/notification-service/internal/models"
+	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/notification-service/pkg/logs"
+	"gopkg.in/gomail.v2"
 )
 
 type Service interface {
+	InputNotify(notify models.Notification)
+	Start(ctx context.Context, countWorker int)
+	Close()
 }
 
 type ServiceManager struct {
@@ -21,20 +27,66 @@ func NewServiceManager(sizeChan int) *ServiceManager {
 }
 
 func (s *ServiceManager) sendNotify(notify models.Notification) error {
-	// notifyChan <- notify
+
+	msg := gomail.NewMessage()
+	from := os.Getenv("MAIL")
+	msg.SetHeader("From", from)
+	msg.SetHeader("To", notify.Email)
+	msg.SetHeader("Subject", notify.Subject)
+	msg.SetBody("text/plain", notify.Body)
+
+	d := gomail.NewDialer("smtp.mail.ru", 465, from, os.Getenv("EMAIL_PASSWORD"))
+
+	if err := d.DialAndSend(msg); err != nil {
+		elk.Log.Error("Error send notify", map[string]interface{}{
+			"method": "sendNotify",
+			"action": "DialAndSend",
+			"error":  err,
+		})
+		return err
+	}
+	elk.Log.Info("Send notify", map[string]interface{}{
+		"method":  "sendNotify",
+		"action":  "DialAndSend",
+		"email":   notify.Email,
+		"subject": notify.Subject,
+		"body":    notify.Body,
+	})
+
 	return nil
 }
 
-func (s *ServiceManager) workerSendNotify(notifyChan chan models.Notification, ctx context.Context) {
+func (s *ServiceManager) workerSendNotify(ctx context.Context) {
 	for {
 		select {
-		case notify := <-notifyChan:
+		case notify := <-s.notifyChan:
 			if err := s.sendNotify(notify); err != nil {
-				// log.Printf("Failed to send notification: %s", err)
+				elk.Log.Error("Error send notify", map[string]interface{}{
+					"method": "workerSendNotify",
+					"action": "sendNotify",
+					"error":  err,
+				})
 			}
 		case <-ctx.Done():
 			return
 		}
-
 	}
+}
+
+func (s *ServiceManager) InputNotify(notify models.Notification) {
+	s.notifyChan <- notify
+}
+
+func (s *ServiceManager) Close() {
+	close(s.notifyChan)
+}
+
+func (s *ServiceManager) createWorkers(ctx context.Context, countWorker int) {
+	for i := 0; i < countWorker; i++ {
+		go s.workerSendNotify(ctx)
+	}
+}
+
+func (s *ServiceManager) Start(ctx context.Context, countWorker int) {
+	s.createWorkers(ctx, countWorker)
 }

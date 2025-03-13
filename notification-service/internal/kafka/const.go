@@ -1,6 +1,5 @@
 package kafka
 
 const (
-	MaxRetry          = 5
-	NotificationTopic = "notification"
+	MaxRetry = 5
 )

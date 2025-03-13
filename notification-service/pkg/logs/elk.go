@@ -28,7 +28,7 @@ func (l *Logger) Initialization() error {
 	}
 
 	hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{
-		"type": "cart-service",
+		"type": "notification-service",
 	}))
 
 	l.logger.Hooks.Add(hook)
