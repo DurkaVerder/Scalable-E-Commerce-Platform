@@ -5,6 +5,7 @@ import (
 
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/order-service/internal/models"
 	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/order-service/pkg/logs"
+	_ "github.com/lib/pq"
 )
 
 type Postgres struct {
@@ -66,7 +67,7 @@ func (p *Postgres) GetOrders(userID int) ([]models.Order, error) {
 	orders := make([]models.Order, 0)
 	for rows.Next() {
 		order := models.Order{}
-		err := rows.Scan(&order.ID, &order.UserID, &order.Amount)
+		err := rows.Scan(&order.ID, &order.Amount, &order.Status, &order.CreatedAt)
 		if err != nil {
 			elk.Log.Error("Error while scanning orders", map[string]interface{}{
 				"method": "GetOrders",
@@ -112,4 +113,37 @@ func (p *Postgres) GetOrderProducts(orderID int) ([]models.OrderProduct, error) 
 	}
 
 	return orderProducts, nil
+}
+
+func (p *Postgres) UpdateOrder(orderID int, status string) error {
+	_, err := p.db.Exec(updateOrderQuery, status, orderID)
+	if err != nil {
+		elk.Log.Error("Error while updating order", map[string]interface{}{
+			"method":   "UpdateOrder",
+			"action":   "exec",
+			"order_id": orderID,
+			"error":    err.Error(),
+		})
+		return err
+	}
+	return nil
+}
+
+func (p *Postgres) GetOrder(orderID int) (models.Order, error) {
+	order := models.Order{}
+	err := p.db.QueryRow(getOrderQuery, orderID).Scan(&order.Amount, &order.Status, &order.CreatedAt)
+	if err != nil {
+		elk.Log.Error("Error while getting order", map[string]interface{}{
+			"method":   "GetOrder",
+			"action":   "queryRow",
+			"order_id": orderID,
+			"error":    err.Error(),
+		})
+		return models.Order{}, err
+	}
+	return order, nil
+}
+
+func (p *Postgres) Close() {
+	p.db.Close()
 }

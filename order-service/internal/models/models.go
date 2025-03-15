@@ -8,6 +8,7 @@ type Order struct {
 	Amount    float64   `json:"amount"`
 	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"created_at"`
+	Products  []OrderProduct
 }
 
 type Product struct {
@@ -17,7 +18,11 @@ type Product struct {
 }
 
 type OrderProduct struct {
-	Quantity int     `json:"quantity"`
 	Name     string  `json:"name"`
 	Price    float64 `json:"price"`
+	Quantity int     `json:"quantity"`
+}
+
+type Status struct {
+	Status string `json:"status"`
 }
