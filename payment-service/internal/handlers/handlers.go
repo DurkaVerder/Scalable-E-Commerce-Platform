@@ -1,15 +1,12 @@
 package handlers
 
 import (
-	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/order-service/internal/service"
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/payment-service/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler interface {
-	HandlerGetOrder(c *gin.Context)
-	HandlerGetOrders(c *gin.Context)
-	HandlerCreateOrder(c *gin.Context)
-	HandlerUpdateOrder(c *gin.Context)
+	HandlerCreatePayment(c *gin.Context)
 }
 
 type HandlerManager struct {
