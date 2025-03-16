@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	db := postgres.ConnectDB(os.Getenv("URL_DB"))
+	db := postgres.ConnectDB(os.Getenv("DB_URL"))
 
 	postgres := postgres.NewPostgres(db)
 	defer db.Close()
@@ -20,7 +20,6 @@ func main() {
 	handlers := handlers.NewHandlerManager(service)
 
 	server := server.NewServer(handlers)
-
 
 	server.Run(os.Getenv("PORT"))
 }
