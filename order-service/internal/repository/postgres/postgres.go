@@ -12,6 +12,19 @@ type Postgres struct {
 	db *sql.DB
 }
 
+func ConnectDB(dsn string) *sql.DB {
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		elk.Log.Error("Error while connecting to db", map[string]interface{}{
+			"method": "ConnectDB",
+			"action": "open",
+			"error":  err.Error(),
+		})
+		panic(err)
+	}
+	return db
+}
+
 func NewPostgres(db *sql.DB) *Postgres {
 	return &Postgres{db: db}
 }
