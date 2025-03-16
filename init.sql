@@ -61,6 +61,8 @@ CREATE TABLE payments (
     user_id INT NOT NULL,
     order_id INT NOT NULL,
     amount DECIMAL NOT NULL CHECK (amount > 0),
+    payment_intent_id TEXT NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_payments_users FOREIGN KEY (user_id) REFERENCES users(id),
     CONSTRAINT fk_payments_orders FOREIGN KEY (order_id) REFERENCES orders(id)
