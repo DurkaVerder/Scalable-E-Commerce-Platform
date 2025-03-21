@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"os"
 
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/handlers"
@@ -13,6 +14,12 @@ import (
 )
 
 func main() {
+	elk.InitLogger(10)
+
+	ctx := context.Background()
+
+	go elk.Log.Start(ctx, 3)
+
 	db, err := postgres.ConnectDB(os.Getenv("DB_URL"))
 	if err != nil {
 		panic(err)
@@ -28,10 +35,28 @@ func main() {
 
 	server := server.NewServer(handlers, r)
 
-	server.Start(os.Getenv("PORT"))
+	go server.Start(os.Getenv("PORT"))
 
-	elk.Log.Info("Server started at port", map[string]interface{}{
-		"method": "Start",
-		"action": "starting server",
+	elk.Log.SendMsg(elk.LogMessage{
+		Level:   'I',
+		Message: "Server started",
+		Fields: map[string]interface{}{
+			"method": "main",
+			"action": "start",
+			"port":   os.Getenv("PORT"),
+		},
 	})
+
+	<-ctx.Done()
+
+	elk.Log.SendMsg(elk.LogMessage{
+		Level:   'I',
+		Message: "Server stopped",
+		Fields: map[string]interface{}{
+			"method": "main",
+			"action": "stop",
+		},
+	})
+
+	elk.Log.Close()
 }

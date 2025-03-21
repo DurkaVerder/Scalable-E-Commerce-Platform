@@ -24,6 +24,7 @@ services:
       - elasticsearch
     networks:
       - elk
+      - e-commerce-network
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.10.0
@@ -63,6 +64,9 @@ services:
       - "8080:8080"
     depends_on:
       - postgres
+      - elasticsearch
+      - kibana
+      - logstash
     networks:
       - e-commerce-network    
     
@@ -78,6 +82,9 @@ services:
       - "8081:8081"
     depends_on:
       - postgres
+      - elasticsearch
+      - kibana
+      - logstash
     networks:
       - e-commerce-network
   
@@ -93,6 +100,9 @@ services:
       - "8082:8082"
     depends_on:
       - postgres
+      - elasticsearch
+      - kibana
+      - logstash
     networks:
       - e-commerce-network
   
@@ -114,6 +124,9 @@ services:
       - "8083:8083"
     depends_on:
       - postgres
+      - elasticsearch
+      - kibana
+      - logstash
     networks:
       - e-commerce-network
   
@@ -130,6 +143,9 @@ services:
       - "8084:8084"
     depends_on:
       - postgres
+      - elasticsearch
+      - kibana
+      - logstash
     networks:
       - e-commerce-network
   
@@ -145,6 +161,9 @@ services:
       - "8085:8085"
     depends_on:
       - postgres
+      - elasticsearch
+      - kibana
+      - logstash
     networks:
       - e-commerce-network
 

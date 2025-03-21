@@ -36,11 +36,13 @@ func (s *Server) configureRouter() {
 func (s *Server) Start(port string) {
 	s.configureRouter()
 	if err := s.r.Run(port); err != nil {
-		elk.Log.Error("Server started at port "+port, map[string]interface{}{
-			"method": "Start",
-			"action": "starting server",
-			"error":  err,
-			"port":   port,
+		elk.Log.SendMsg(elk.LogMessage{
+			Level:   'E',
+			Message: "Error starting server",
+			Fields: map[string]interface{}{
+				"method": "Start",
+				"error":  err,
+			},
 		})
 		panic(err)
 	}

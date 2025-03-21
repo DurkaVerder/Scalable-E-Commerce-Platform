@@ -37,12 +37,17 @@ func (s *ServiceManager) GetCart(userID int) ([]models.Product, error) {
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {
-		elk.Log.Error("Error getting cart from repository", map[string]interface{}{
-			"method":  "GetCart",
-			"action":  "getting cart from repository",
-			"error":   err,
-			"user_id": userID,
+		elk.Log.SendMsg(elk.LogMessage{
+			Level:   'E',
+			Message: "Error getting cart from repository",
+			Fields: map[string]interface{}{
+				"method":  "GetCart",
+				"action":  "getting cart from repository",
+				"error":   err,
+				"user_id": userID,
+			},
 		})
+
 		return nil, err
 	}
 
@@ -52,14 +57,19 @@ func (s *ServiceManager) GetCart(userID int) ([]models.Product, error) {
 // AddProductToCart adds a product to the cart.
 func (s *ServiceManager) AddProductToCart(userID, productID, quantity int) error {
 	if err := s.repo.AddProductToCart(userID, productID, quantity); err != nil {
-		elk.Log.Error("Error adding product to cart in repository", map[string]interface{}{
-			"method":    "AddProductToCart",
-			"action":    "adding product to cart in repository",
-			"error":     err,
-			"user_id":   userID,
-			"productID": productID,
-			"quantity":  quantity,
+		elk.Log.SendMsg(elk.LogMessage{
+			Level:   'E',
+			Message: "Error adding product to cart in repository",
+			Fields: map[string]interface{}{
+				"method":    "AddProductToCart",
+				"action":    "adding product to cart in repository",
+				"error":     err,
+				"user_id":   userID,
+				"productID": productID,
+				"quantity":  quantity,
+			},
 		})
+
 		return err
 	}
 
@@ -69,12 +79,16 @@ func (s *ServiceManager) AddProductToCart(userID, productID, quantity int) error
 // RemoveProductFromCart removes a product from the cart.
 func (s *ServiceManager) RemoveProductFromCart(userID, productID int) error {
 	if err := s.repo.DeleteProductFromCart(userID, productID); err != nil {
-		elk.Log.Error("Error removing product from cart in repository", map[string]interface{}{
-			"method":    "RemoveProductFromCart",
-			"action":    "removing product from cart in repository",
-			"error":     err,
-			"user_id":   userID,
-			"productID": productID,
+		elk.Log.SendMsg(elk.LogMessage{
+			Level:   'E',
+			Message: "Error removing product from cart in repository",
+			Fields: map[string]interface{}{
+				"method":    "RemoveProductFromCart",
+				"action":    "removing product from cart in repository",
+				"error":     err,
+				"user_id":   userID,
+				"productID": productID,
+			},
 		})
 		return err
 	}
@@ -90,13 +104,17 @@ func (s *ServiceManager) UpdateProductQuantity(userID, productID, quantity int) 
 	}
 
 	if err := s.repo.UpdateProductQuantity(userID, productID, quantity); err != nil {
-		elk.Log.Error("Error updating product quantity in repository", map[string]interface{}{
-			"method":    "UpdateProductQuantity",
-			"action":    "updating product quantity in repository",
-			"error":     err,
-			"user_id":   userID,
-			"productID": productID,
-			"quantity":  quantity,
+		elk.Log.SendMsg(elk.LogMessage{
+			Level:   'E',
+			Message: "Error updating product quantity in repository",
+			Fields: map[string]interface{}{
+				"method":    "UpdateProductQuantity",
+				"action":    "updating product quantity in repository",
+				"error":     err,
+				"user_id":   userID,
+				"productID": productID,
+				"quantity":  quantity,
+			},
 		})
 		return err
 	}
@@ -113,12 +131,6 @@ func (s *ServiceManager) GetUserID(ctx *gin.Context) (int, error) {
 
 	id, err := strconv.Atoi(userID)
 	if err != nil {
-		elk.Log.Error("Error converting user ID to integer", map[string]interface{}{
-			"method":  "GetUserID",
-			"action":  "converting user ID to integer",
-			"error":   err,
-			"user_id": userID,
-		})
 		return -1, err
 	}
 	return id, nil

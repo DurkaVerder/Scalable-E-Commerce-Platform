@@ -29,6 +29,16 @@ func (h *HandlersManager) HandlerAddProduct(c *gin.Context) {
 		return
 	}
 
+	elk.Log.SendMsg(elk.LogMessage{
+		Level:   'I',
+		Message: "Product added to cart",
+		Fields: map[string]interface{}{
+			"method":    "HandlerAddProduct",
+			"user_id":   userID,
+			"productID": product.ID,
+		},
+	})
+
 	c.JSON(http.StatusOK, gin.H{"message": "product added to cart"})
 }
 
@@ -53,15 +63,28 @@ func (h *HandlersManager) HandlerGetCart(c *gin.Context) {
 func (h *HandlersManager) HandlerDeleteProduct(c *gin.Context) {
 	userID, err := h.service.GetUserID(c)
 	if err != nil {
+		elk.Log.SendMsg(elk.LogMessage{
+			Level:   'E',
+			Message: "Error getting user ID",
+			Fields: map[string]interface{}{
+				"method": "HandlerDeleteProduct",
+				"error":  err,
+			},
+		})
+
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user"})
 		return
 	}
 
 	productID, err := strconv.Atoi(c.Param("product_id"))
 	if err != nil {
-		elk.Log.Error("Failed to convert the product ID to an integer: "+err.Error(), map[string]interface{}{
-			"method": "HandlerDeleteProduct",
-			"action": "converting the product ID to an integer",
+		elk.Log.SendMsg(elk.LogMessage{
+			Level:   'E',
+			Message: "Error converting product ID to integer",
+			Fields: map[string]interface{}{
+				"method": "HandlerDeleteProduct",
+				"error":  err,
+			},
 		})
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid product ID"})
 		return
@@ -72,6 +95,15 @@ func (h *HandlersManager) HandlerDeleteProduct(c *gin.Context) {
 		return
 	}
 
+	elk.Log.SendMsg(elk.LogMessage{
+		Level:   'I',
+		Message: "Product removed from cart",
+		Fields: map[string]interface{}{
+			"method":    "HandlerDeleteProduct",
+			"user_id":   userID,
+			"productID": productID,
+		},
+	})
 	c.JSON(http.StatusOK, gin.H{"message": "product removed from cart"})
 }
 

@@ -25,10 +25,13 @@ func NewPostgres(db *sql.DB) *Postgres {
 func ConnectDB(dbURL string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
-		elk.Log.Error("Failed to connect to the database: "+err.Error(), map[string]interface{}{
-			"method": "ConnectDB",
-			"action": "connecting to the database",
-			"dbURL":  dbURL,
+		elk.Log.SendMsg(elk.LogMessage{
+			Level:   'E',
+			Message: "Failed to connect to the database: " + err.Error(),
+			Fields: map[string]interface{}{
+				"method": "ConnectDB",
+				"action": "connecting to the database",
+			},
 		})
 		return nil, err
 	}
@@ -41,11 +44,6 @@ func (p *Postgres) GetCart(userID int) ([]models.Product, error) {
 
 	rows, err := p.db.Query(getCartQuery, userID)
 	if err != nil {
-		elk.Log.Error("Failed to get the cart: "+err.Error(), map[string]interface{}{
-			"method": "GetCart",
-			"action": "getting the cart",
-			"userID": userID,
-		})
 		return nil, err
 	}
 
@@ -53,10 +51,6 @@ func (p *Postgres) GetCart(userID int) ([]models.Product, error) {
 		var product models.Product
 		err = rows.Scan(&product.ID, &product.Name, &product.Price, &product.Description, &product.Quantity)
 		if err != nil {
-			elk.Log.Error("Failed to scan the cart row: "+err.Error(), map[string]interface{}{
-				"method": "GetCart",
-				"action": "scanning the cart row",
-			})
 			return nil, err
 		}
 		products = append(products, product)
@@ -69,25 +63,11 @@ func (p *Postgres) GetCart(userID int) ([]models.Product, error) {
 func (p *Postgres) AddProductToCart(userID, productID, quantity int) error {
 	cartID, err := p.getCartId(userID)
 	if err != nil {
-		elk.Log.Error("Failed to get the cart ID: "+err.Error(), map[string]interface{}{
-			"method": "AddProductToCart",
-			"action": "getting the cart ID",
-			"userID": userID,
-		})
-
 		return err
 	}
 
 	_, err = p.db.Exec(addProductToCartQuery, cartID, productID, quantity)
 	if err != nil {
-		elk.Log.Error("Failed to add the product to the cart: "+err.Error(), map[string]interface{}{
-			"method":    "AddProductToCart",
-			"action":    "adding the product to the cart",
-			"cartID":    cartID,
-			"productID": productID,
-			"quantity":  quantity,
-		})
-
 		return err
 	}
 
@@ -98,24 +78,11 @@ func (p *Postgres) AddProductToCart(userID, productID, quantity int) error {
 func (p *Postgres) DeleteProductFromCart(userID, productID int) error {
 	cartID, err := p.getCartId(userID)
 	if err != nil {
-		elk.Log.Error("Failed to get the cart ID: "+err.Error(), map[string]interface{}{
-			"method":    "De;eteProductFromCart",
-			"action":    "getting the cart ID",
-			"userID":    userID,
-			"productID": productID,
-		})
 		return err
 	}
 
 	_, err = p.db.Exec(deleteProductFromCartQuery, cartID, productID)
 	if err != nil {
-		elk.Log.Error("Failed to delete the product from the cart: "+err.Error(), map[string]interface{}{
-			"method":    "DeleteProductFromCart",
-			"action":    "deleting the product from the cart",
-			"cartID":    cartID,
-			"productID": productID,
-		})
-
 		return err
 	}
 
@@ -126,25 +93,11 @@ func (p *Postgres) DeleteProductFromCart(userID, productID int) error {
 func (p *Postgres) UpdateProductQuantity(userID, productID, quantity int) error {
 	cartID, err := p.getCartId(userID)
 	if err != nil {
-		elk.Log.Error("Failed to get the cart ID: "+err.Error(), map[string]interface{}{
-			"method":    "UpdateProductQuantity",
-			"action":    "getting the cart ID",
-			"userID":    userID,
-			"productID": productID,
-			"quantity":  quantity,
-		})
 		return err
 	}
 
 	_, err = p.db.Exec(updateProductQuantityQuery, cartID, productID, quantity)
 	if err != nil {
-		elk.Log.Error("Failed to update the product quantity: "+err.Error(), map[string]interface{}{
-			"method":    "UpdateProductQuantity",
-			"action":    "updating the product quantity",
-			"cartID":    cartID,
-			"productID": productID,
-			"quantity":  quantity,
-		})
 		return err
 	}
 
@@ -156,12 +109,6 @@ func (p *Postgres) getCartId(userID int) (int, error) {
 	var cartID int
 	err := p.db.QueryRow(getCartIDQuery, userID).Scan(&cartID)
 	if err != nil {
-		elk.Log.Error("Failed to get the cart ID: "+err.Error(), map[string]interface{}{
-			"method": "getCartId",
-			"action": "getting the cart ID",
-			"userID": userID,
-		})
-
 		return -1, err
 	}
 	return cartID, nil
