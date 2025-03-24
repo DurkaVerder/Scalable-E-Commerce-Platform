@@ -3,13 +3,13 @@ module github.com/DurkaVerder/Scalable-E-Commerce-Platform/notification-service
 go 1.23.3
 
 require (
+	github.com/DurkaVerder/elk-send-logs v1.0.0
 	github.com/IBM/sarama v1.45.1
-	github.com/bshuster-repo/logrus-logstash-hook v1.1.0
-	github.com/sirupsen/logrus v1.9.3
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
 require (
+	github.com/bshuster-repo/logrus-logstash-hook v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/eapache/go-resiliency v1.7.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 // indirect
@@ -26,6 +26,7 @@ require (
 	github.com/klauspost/compress v1.17.11 // indirect
 	github.com/pierrec/lz4/v4 v4.1.22 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
+	github.com/sirupsen/logrus v1.9.3 // indirect
 	golang.org/x/crypto v0.33.0 // indirect
 	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect

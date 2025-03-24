@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/notification-service/internal/models"
-	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/notification-service/pkg/logs"
+	elk "github.com/DurkaVerder/elk-send-logs/elk"
 	"gopkg.in/gomail.v2"
 )
 
@@ -38,20 +38,30 @@ func (s *ServiceManager) sendNotify(notify models.Notification) error {
 	d := gomail.NewDialer("smtp.mail.ru", 465, from, os.Getenv("EMAIL_PASSWORD"))
 
 	if err := d.DialAndSend(msg); err != nil {
-		elk.Log.Error("Error send notify", map[string]interface{}{
-			"method": "sendNotify",
-			"action": "DialAndSend",
-			"error":  err,
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error send notify",
+				Fields: map[string]interface{}{
+					"method": "sendNotify",
+					"action": "DialAndSend",
+					"error":  err,
+				},
+			})
 		return err
 	}
-	elk.Log.Info("Send notify", map[string]interface{}{
-		"method":  "sendNotify",
-		"action":  "DialAndSend",
-		"email":   notify.Email,
-		"subject": notify.Subject,
-		"body":    notify.Body,
-	})
+	elk.Log.SendMsg(
+		elk.LogMessage{
+			Level:   'I',
+			Message: "Send notify",
+			Fields: map[string]interface{}{
+				"method":  "sendNotify",
+				"action":  "DialAndSend",
+				"email":   notify.Email,
+				"subject": notify.Subject,
+				"body":    notify.Body,
+			},
+		})
 
 	return nil
 }
@@ -61,11 +71,16 @@ func (s *ServiceManager) workerSendNotify(ctx context.Context) {
 		select {
 		case notify := <-s.notifyChan:
 			if err := s.sendNotify(notify); err != nil {
-				elk.Log.Error("Error send notify", map[string]interface{}{
-					"method": "workerSendNotify",
-					"action": "sendNotify",
-					"error":  err,
-				})
+				elk.Log.SendMsg(
+					elk.LogMessage{
+						Level:   'E',
+						Message: "Error send notify",
+						Fields: map[string]interface{}{
+							"method": "workerSendNotify",
+							"action": "sendNotify",
+							"error":  err,
+						},
+					})
 			}
 		case <-ctx.Done():
 			return
