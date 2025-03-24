@@ -1,19 +1,24 @@
 package main
 
 import (
+	"context"
 	"os"
 
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/handlers"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/repository/postgres"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/server"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/service"
+	"github.com/DurkaVerder/elk-send-logs/elk"
 )
 
 func main() {
-	db, err := postgres.ConnectToDB()
-	if err != nil {
-		panic(err)
-	}
+	elk.InitLogger(5, "auth-service", os.Getenv("ELK_URL"))
+
+	ctx := context.Background()
+
+	elk.Log.Start(ctx, 5)
+
+	db := postgres.ConnectToDB()
 
 	postgres := postgres.NewPostgres(db)
 
@@ -23,5 +28,21 @@ func main() {
 
 	server := server.NewServer(handlers)
 
-	server.Start(os.Getenv("PORT"))
+	go server.Start(os.Getenv("PORT"))
+
+	elk.Log.SendMsg(
+		elk.LogMessage{
+			Level:   'I',
+			Message: "Server started",
+			Fields: map[string]interface{}{
+				"method": "main",
+				"action": "start",
+				"port":   os.Getenv("PORT"),
+			},
+		})
+
+	<-ctx.Done()
+
+	elk.Log.Close()
+	postgres.Close()
 }

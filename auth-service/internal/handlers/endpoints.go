@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/models"
-	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/pkg/logs"
+	elk "github.com/DurkaVerder/elk-send-logs/elk"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,11 +18,16 @@ func (h *HandlersManager) HandlerLogin(ctx *gin.Context) {
 
 	token, err := h.service.Login(user)
 	if err != nil {
-		elk.Log.Error("Error logging in", map[string]interface{}{
-			"method": "HandlerLogin",
-			"action": "Login",
-			"error":  err.Error(),
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error logging in",
+				Fields: map[string]interface{}{
+					"method": "HandlerLogin",
+					"action": "Login",
+					"error":  err.Error(),
+				},
+			})
 
 		if err.Error() == "not found" {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
@@ -34,28 +39,37 @@ func (h *HandlersManager) HandlerLogin(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"token": token})
-
 }
 
 func (h *HandlersManager) HandlerRegister(ctx *gin.Context) {
 	var user models.User
 	if err := ctx.ShouldBindJSON(&user); err != nil {
-		elk.Log.Error("Error binding JSON", map[string]interface{}{
-			"method": "HandlerRegister",
-			"action": "ShouldBindJSON",
-			"error":  err.Error(),
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error binding JSON",
+				Fields: map[string]interface{}{
+					"method": "HandlerRegister",
+					"action": "ShouldBindJSON",
+					"error":  err.Error(),
+				},
+			})
 
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := h.service.Register(user); err != nil {
-		elk.Log.Error("Error registering user", map[string]interface{}{
-			"method": "HandlerRegister",
-			"action": "Register",
-			"error":  err.Error(),
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error registering user",
+				Fields: map[string]interface{}{
+					"method": "HandlerRegister",
+					"action": "Register",
+					"error":  err.Error(),
+				},
+			})
 
 		if err.Error() == "invalid password" {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid password"})
@@ -72,11 +86,16 @@ func (h *HandlersManager) HandlerValidateToken(ctx *gin.Context) {
 	token := ctx.GetHeader("Authorization")
 
 	if err := h.service.ValidateJWT(token); err != nil {
-		elk.Log.Error("Error validating token", map[string]interface{}{
-			"method": "HandlerValidateToken",
-			"action": "ValidateJWT",
-			"error":  err.Error(),
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error validating token",
+				Fields: map[string]interface{}{
+					"method": "HandlerValidateToken",
+					"action": "ValidateJWT",
+					"error":  err.Error(),
+				},
+			})
 
 		ctx.JSON(http.StatusNonAuthoritativeInfo, gin.H{"error": "user not authorized"})
 		return
@@ -84,12 +103,17 @@ func (h *HandlersManager) HandlerValidateToken(ctx *gin.Context) {
 
 	userID, err := h.service.GetUserIdFromToken(token)
 	if err != nil {
-		elk.Log.Error("Error getting user ID from token", map[string]interface{}{
-			"method": "HandlerValidateToken",
-			"action": "GetUserIdFromToken",
-			"error":  err.Error(),
-			"token":  token,
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error getting user ID from token",
+				Fields: map[string]interface{}{
+					"method": "HandlerValidateToken",
+					"action": "GetUserIdFromToken",
+					"error":  err.Error(),
+					"token":  token,
+				},
+			})
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/auth-service/internal/handlers"
+	"github.com/DurkaVerder/elk-send-logs/elk"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,6 +28,17 @@ func (s *Server) Start(port string) {
 	s.initRoutes()
 
 	if err := s.r.Run(port); err != nil {
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Failed to start server",
+				Fields: map[string]interface{}{
+					"method": "Start",
+					"action": "starting server",
+					"error":  err.Error(),
+				},
+			})
+
 		panic(err)
 	}
 }
