@@ -60,6 +60,7 @@ services:
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - JWT_SECRET=super-puper-ultra-top-secret
       - PORT=:8080
+      - ELK_URL=logstash:5000
     ports:
       - "8080:8080"
     depends_on:
@@ -78,6 +79,7 @@ services:
     environment:
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - PORT=:8081
+      - ELK_URL=logstash:5000
     ports:
       - "8081:8081"
     depends_on:
@@ -96,6 +98,7 @@ services:
     environment:
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - PORT=:8082
+      - ELK_URL=logstash:5000
     ports:
       - "8082:8082"
     depends_on:
@@ -120,6 +123,7 @@ services:
       - EMAIL_PASSWORD=hPWFLzDD5mqWMPy1G1ty
       - SIZE_CHAN=50
       - COUNT_WORKER=5
+      - ELK_URL=logstash:5000
     ports:
       - "8083:8083"
     depends_on:
@@ -139,6 +143,7 @@ services:
     environment:
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - PORT=:8084
+      - ELK_URL=logstash:5000
     ports:
       - "8084:8084"
     depends_on:
@@ -157,6 +162,7 @@ services:
     environment:
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - PORT=:8085
+      - ELK_URL=logstash:5000
     ports:
       - "8085:8085"
     depends_on:
