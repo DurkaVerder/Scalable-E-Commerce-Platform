@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/order-service/internal/handlers"
+	"github.com/DurkaVerder/elk-send-logs/elk"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,6 +34,17 @@ func (s *Server) Run(port string) {
 	s.initRouters()
 
 	if err := s.r.Run(port); err != nil {
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error running server",
+				Fields: map[string]interface{}{
+					"method": "Run",
+					"action": "running server",
+					"error":  err.Error(),
+					"port":   port,
+				},
+			})
 		panic(err)
 	}
 }

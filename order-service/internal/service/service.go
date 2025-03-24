@@ -5,7 +5,7 @@ import (
 
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/order-service/internal/models"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/order-service/internal/repository"
-	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/order-service/pkg/logs"
+	elk "github.com/DurkaVerder/elk-send-logs/elk"
 )
 
 type Service interface {
@@ -35,11 +35,16 @@ func (s *ServiceManager) CreateOrder(userId int, products []models.Product) erro
 	amount := s.sumProducts(products)
 
 	if err := s.repo.CreateOrder(userId, amount, products); err != nil {
-		elk.Log.Error("Error creating order", map[string]interface{}{
-			"method": "CreateOrder",
-			"action": "CreateOrder",
-			"error":  err,
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error creating order",
+				Fields: map[string]interface{}{
+					"method": "CreateOrder",
+					"action": "CreateOrder",
+					"error":  err.Error(),
+				},
+			})
 		return err
 	}
 	return nil
@@ -57,11 +62,16 @@ func (s *ServiceManager) sumProducts(products []models.Product) float64 {
 func (s *ServiceManager) GetOrders(userId int) ([]models.Order, error) {
 	orders, err := s.repo.GetOrders(userId)
 	if err != nil {
-		elk.Log.Error("Error getting orders", map[string]interface{}{
-			"method": "GetOrders",
-			"action": "GetOrders",
-			"error":  err,
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error getting orders",
+				Fields: map[string]interface{}{
+					"method": "GetOrders",
+					"action": "GetOrders",
+					"error":  err.Error(),
+				},
+			})
 		return nil, err
 	}
 	return orders, nil
@@ -71,23 +81,33 @@ func (s *ServiceManager) GetOrder(orderId int) ([]models.OrderProduct, error) {
 
 	order, err := s.repo.GetOrder(orderId)
 	if err != nil {
-		elk.Log.Error("Error getting order", map[string]interface{}{
-			"method":   "GetOrder",
-			"action":   "GetOrder",
-			"order_id": orderId,
-			"error":    err,
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error getting order",
+				Fields: map[string]interface{}{
+					"method":   "GetOrder",
+					"action":   "GetOrder",
+					"order_id": orderId,
+					"error":    err.Error(),
+				},
+			})
 		return nil, err
 	}
 
 	orderProduct, err := s.repo.GetOrderProducts(orderId)
 	if err != nil {
-		elk.Log.Error("Error getting order items", map[string]interface{}{
-			"method":   "GetOrderItems",
-			"action":   "GetOrderItems",
-			"order_id": orderId,
-			"error":    err,
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error getting order items",
+				Fields: map[string]interface{}{
+					"method":   "GetOrderItems",
+					"action":   "GetOrderItems",
+					"order_id": orderId,
+					"error":    err.Error(),
+				},
+			})
 		return nil, err
 	}
 
@@ -97,12 +117,17 @@ func (s *ServiceManager) GetOrder(orderId int) ([]models.OrderProduct, error) {
 
 func (s *ServiceManager) UpdateOrder(orderId int, status string) error {
 	if err := s.repo.UpdateOrder(orderId, status); err != nil {
-		elk.Log.Error("Error updating order", map[string]interface{}{
-			"method":   "UpdateOrder",
-			"action":   "UpdateOrder",
-			"order_id": orderId,
-			"error":    err,
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error updating order",
+				Fields: map[string]interface{}{
+					"method":   "UpdateOrder",
+					"action":   "UpdateOrder",
+					"order_id": orderId,
+					"error":    err.Error(),
+				},
+			})
 		return err
 	}
 	return nil
@@ -111,11 +136,16 @@ func (s *ServiceManager) UpdateOrder(orderId int, status string) error {
 func (s *ServiceManager) ConvertStringToInt(num string) (int, error) {
 	resInt, err := strconv.Atoi(num)
 	if err != nil {
-		elk.Log.Error("Error converting string to int", map[string]interface{}{
-			"method": "convertStringToInt",
-			"action": "convertStringToInt",
-			"error":  err,
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error converting string to int",
+				Fields: map[string]interface{}{
+					"method": "convertStringToInt",
+					"action": "convertStringToInt",
+					"error":  err.Error(),
+				},
+			})
 		return 0, err
 	}
 	return resInt, nil

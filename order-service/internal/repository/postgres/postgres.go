@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/order-service/internal/models"
-	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/order-service/pkg/logs"
+	elk "github.com/DurkaVerder/elk-send-logs/elk"
 	_ "github.com/lib/pq"
 )
 
@@ -15,11 +15,17 @@ type Postgres struct {
 func ConnectDB(dsn string) *sql.DB {
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		elk.Log.Error("Error while connecting to db", map[string]interface{}{
-			"method": "ConnectDB",
-			"action": "open",
-			"error":  err.Error(),
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error connecting to database",
+				Fields: map[string]interface{}{
+					"method": "ConnectDB",
+					"action": "connecting to database",
+					"dsn":    dsn,
+					"error":  err.Error(),
+				},
+			})
 		panic(err)
 	}
 	return db
@@ -33,11 +39,6 @@ func (p *Postgres) CreateOrder(userID int, amount float64, products []models.Pro
 	orderId := -1
 	err := p.db.QueryRow(createOrderQuery, userID, amount).Scan(&orderId)
 	if err != nil {
-		elk.Log.Error("Error while creating order", map[string]interface{}{
-			"method": "CreateOrder",
-			"action": "queryRow",
-			"error":  err.Error(),
-		})
 		return err
 	}
 
@@ -52,13 +53,6 @@ func (p *Postgres) createOrderItems(orderId int, products []models.Product) erro
 	for _, product := range products {
 		_, err := p.db.Exec(createOrderItemsQuery, orderId, product.ID, product.Quantity)
 		if err != nil {
-			elk.Log.Error("Error while creating order items", map[string]interface{}{
-				"method":   "createOrderItems",
-				"action":   "exec",
-				"order_id": orderId,
-				"product":  product,
-				"error":    err.Error(),
-			})
 			return err
 		}
 	}
@@ -68,11 +62,6 @@ func (p *Postgres) createOrderItems(orderId int, products []models.Product) erro
 func (p *Postgres) GetOrders(userID int) ([]models.Order, error) {
 	rows, err := p.db.Query(getOrdersQuery, userID)
 	if err != nil {
-		elk.Log.Error("Error while getting orders", map[string]interface{}{
-			"method": "GetOrders",
-			"action": "query",
-			"error":  err.Error(),
-		})
 		return nil, err
 	}
 	defer rows.Close()
@@ -82,11 +71,6 @@ func (p *Postgres) GetOrders(userID int) ([]models.Order, error) {
 		order := models.Order{}
 		err := rows.Scan(&order.ID, &order.Amount, &order.Status, &order.CreatedAt)
 		if err != nil {
-			elk.Log.Error("Error while scanning orders", map[string]interface{}{
-				"method": "GetOrders",
-				"action": "scan",
-				"error":  err.Error(),
-			})
 			return nil, err
 		}
 
@@ -99,12 +83,6 @@ func (p *Postgres) GetOrders(userID int) ([]models.Order, error) {
 func (p *Postgres) GetOrderProducts(orderID int) ([]models.OrderProduct, error) {
 	rows, err := p.db.Query(getOrderProductsQuery, orderID)
 	if err != nil {
-		elk.Log.Error("Error while getting order products", map[string]interface{}{
-			"method":   "GetOrderProducts",
-			"action":   "query",
-			"order_id": orderID,
-			"error":    err.Error(),
-		})
 		return nil, err
 	}
 	defer rows.Close()
@@ -114,11 +92,6 @@ func (p *Postgres) GetOrderProducts(orderID int) ([]models.OrderProduct, error) 
 		orderProduct := models.OrderProduct{}
 		err := rows.Scan(&orderProduct.Quantity, &orderProduct.Name, &orderProduct.Price)
 		if err != nil {
-			elk.Log.Error("Error while scanning order products", map[string]interface{}{
-				"method": "GetOrderProducts",
-				"action": "scan",
-				"error":  err.Error(),
-			})
 			return nil, err
 		}
 
@@ -131,12 +104,6 @@ func (p *Postgres) GetOrderProducts(orderID int) ([]models.OrderProduct, error) 
 func (p *Postgres) UpdateOrder(orderID int, status string) error {
 	_, err := p.db.Exec(updateOrderQuery, status, orderID)
 	if err != nil {
-		elk.Log.Error("Error while updating order", map[string]interface{}{
-			"method":   "UpdateOrder",
-			"action":   "exec",
-			"order_id": orderID,
-			"error":    err.Error(),
-		})
 		return err
 	}
 	return nil
@@ -146,12 +113,6 @@ func (p *Postgres) GetOrder(orderID int) (models.Order, error) {
 	order := models.Order{}
 	err := p.db.QueryRow(getOrderQuery, orderID).Scan(&order.Amount, &order.Status, &order.CreatedAt)
 	if err != nil {
-		elk.Log.Error("Error while getting order", map[string]interface{}{
-			"method":   "GetOrder",
-			"action":   "queryRow",
-			"order_id": orderID,
-			"error":    err.Error(),
-		})
 		return models.Order{}, err
 	}
 	return order, nil
