@@ -2,6 +2,22 @@ version: '3.9'
 
 services:
 
+  traefik:
+    image: traefik:v3.3
+    container_name: traefik
+    restart: always
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - e-commerce-network
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
     container_name: elasticsearch
@@ -29,12 +45,15 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:7.10.0
     container_name: kibana
-    ports:
-      - "5601:5601"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kibana.rule=Host(`kibana.example.com`)"
+      - "traefik.http.services.kibana.loadbalancer.server.port=5601"
     depends_on:
       - elasticsearch
     networks:
       - elk
+      - e-commerce-network
 
   postgres:
     image: postgres:15
@@ -44,7 +63,7 @@ services:
       POSTGRES_PASSWORD: durka
       POSTGRES_DB: e-commerce-database
     ports:
-      - "5432:5432"
+      - "5432:5432" 
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -59,10 +78,12 @@ services:
     environment:
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - JWT_SECRET=super-puper-ultra-top-secret
-      - PORT=:8080
+      - PORT=:8089
       - ELK_URL=logstash:5000
-    ports:
-      - "8080:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=Host(`auth.example.com`)"
+      - "traefik.http.services.auth.loadbalancer.server.port=8089"
     depends_on:
       - postgres
       - elasticsearch
@@ -80,8 +101,10 @@ services:
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - PORT=:8081
       - ELK_URL=logstash:5000
-    ports:
-      - "8081:8081"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cart.rule=Host(`cart.example.com`)"
+      - "traefik.http.services.cart.loadbalancer.server.port=8081"
     depends_on:
       - postgres
       - elasticsearch
@@ -99,8 +122,10 @@ services:
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - PORT=:8082
       - ELK_URL=logstash:5000
-    ports:
-      - "8082:8082"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.catalog.rule=Host(`catalog.example.com`)"
+      - "traefik.http.services.catalog.loadbalancer.server.port=8082"
     depends_on:
       - postgres
       - elasticsearch
@@ -124,8 +149,10 @@ services:
       - SIZE_CHAN=50
       - COUNT_WORKER=5
       - ELK_URL=logstash:5000
-    ports:
-      - "8083:8083"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.notification.rule=Host(`notification.example.com`)"
+      - "traefik.http.services.notification.loadbalancer.server.port=8083"
     depends_on:
       - postgres
       - elasticsearch
@@ -134,7 +161,6 @@ services:
     networks:
       - e-commerce-network
   
-
   order-service:
     build:
       context: ./order-service
@@ -144,8 +170,10 @@ services:
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - PORT=:8084
       - ELK_URL=logstash:5000
-    ports:
-      - "8084:8084"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.order.rule=Host(`order.example.com`)"
+      - "traefik.http.services.order.loadbalancer.server.port=8084"
     depends_on:
       - postgres
       - elasticsearch
@@ -163,8 +191,10 @@ services:
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - PORT=:8085
       - ELK_URL=logstash:5000
-    ports:
-      - "8085:8085"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.payment.rule=Host(`payment.example.com`)"
+      - "traefik.http.services.payment.loadbalancer.server.port=8085"
     depends_on:
       - postgres
       - elasticsearch
@@ -178,8 +208,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
-    ports:
-      - "3000:3000"
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.example.com`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     networks:
       - e-commerce-network
 
@@ -191,4 +224,3 @@ networks:
     driver: bridge
   elk:
     driver: bridge
-      
