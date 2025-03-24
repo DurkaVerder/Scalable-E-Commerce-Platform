@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	elk.InitLogger(10, "cart-service", "logstash:5000")
+	elk.InitLogger(10, "cart-service", os.Getenv("ELK_URL"))
 
 	ctx := context.Background()
 
