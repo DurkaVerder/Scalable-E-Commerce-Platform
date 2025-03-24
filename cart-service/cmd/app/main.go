@@ -8,13 +8,12 @@ import (
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/repository/postgres"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/server"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/service"
-	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/pkg/logs"
-
+	elk "github.com/DurkaVerder/elk-send-logs/elk"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	elk.InitLogger(10)
+	elk.InitLogger(10, "cart-service", "logstash:5000")
 
 	ctx := context.Background()
 

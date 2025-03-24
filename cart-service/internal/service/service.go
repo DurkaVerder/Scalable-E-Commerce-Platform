@@ -8,7 +8,7 @@ import (
 
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/models"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/repository"
-	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/pkg/logs"
+	elk "github.com/DurkaVerder/elk-send-logs/elk"
 
 	"github.com/gin-gonic/gin"
 )

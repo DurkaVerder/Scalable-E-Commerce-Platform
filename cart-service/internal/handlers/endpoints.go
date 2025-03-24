@@ -5,8 +5,7 @@ import (
 	"strconv"
 
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/internal/models"
-	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/cart-service/pkg/logs"
-
+	elk "github.com/DurkaVerder/elk-send-logs/elk"
 	"github.com/gin-gonic/gin"
 )
 
