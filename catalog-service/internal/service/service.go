@@ -5,7 +5,7 @@ import (
 
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/catalog-service/internal/models"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/catalog-service/internal/repository"
-	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/catalog-service/pkg/logs"
+	elk "github.com/DurkaVerder/elk-send-logs/elk"
 )
 
 type Service interface {
@@ -28,22 +28,32 @@ func (s *ServiceManager) GetProducts(category string) ([]models.Product, error) 
 	products := []models.Product{}
 
 	if category != "" {
-		products, err = s.repo.GetProductsByCategory(category) // Меняем := на =
+		products, err = s.repo.GetProductsByCategory(category)
 		if err != nil {
-			elk.Log.Error("Error getting products by category", map[string]interface{}{
-				"method":   "GetProducts",
-				"category": category,
-				"error":    err.Error(),
-			})
+			elk.Log.SendMsg(
+				elk.LogMessage{
+					Level:   'E',
+					Message: "Error getting products by category",
+					Fields: map[string]interface{}{
+						"method":   "GetProducts",
+						"category": category,
+						"error":    err.Error(),
+					},
+				})
 			return nil, err
 		}
 	} else {
-		products, err = s.repo.GetAllProducts() // Меняем := на =
+		products, err = s.repo.GetAllProducts()
 		if err != nil {
-			elk.Log.Error("Error getting all products", map[string]interface{}{
-				"method": "GetProducts",
-				"error":  err.Error(),
-			})
+			elk.Log.SendMsg(
+				elk.LogMessage{
+					Level:   'E',
+					Message: "Error getting all products",
+					Fields: map[string]interface{}{
+						"method": "GetProducts",
+						"error":  err.Error(),
+					},
+				})
 			return nil, err
 		}
 	}
@@ -54,21 +64,31 @@ func (s *ServiceManager) GetProducts(category string) ([]models.Product, error) 
 func (s *ServiceManager) GetProductByID(id string) (models.Product, error) {
 	productId, err := strconv.Atoi(id)
 	if err != nil {
-		elk.Log.Error("Error converting id to int", map[string]interface{}{
-			"method": "GetProductByID",
-			"id":     id,
-			"error":  err.Error(),
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error converting id to int",
+				Fields: map[string]interface{}{
+					"method": "GetProductByID",
+					"id":     id,
+					"error":  err.Error(),
+				},
+			})
 		return models.Product{}, err
 	}
 
 	product, err := s.repo.GetProductById(productId)
 	if err != nil {
-		elk.Log.Error("Error getting product by id", map[string]interface{}{
-			"method": "GetProductByID",
-			"id":     id,
-			"error":  err.Error(),
-		})
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error getting product by id",
+				Fields: map[string]interface{}{
+					"method": "GetProductByID",
+					"id":     id,
+					"error":  err.Error(),
+				},
+			})
 		return models.Product{}, err
 	}
 

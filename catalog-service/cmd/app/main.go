@@ -1,25 +1,23 @@
 package main
 
 import (
+	"context"
 	"os"
 
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/catalog-service/internal/handlers"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/catalog-service/internal/repository/postgres"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/catalog-service/internal/server"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/catalog-service/internal/service"
-	elk "github.com/DurkaVerder/Scalable-E-Commerce-Platform/catalog-service/pkg/logs"
+	elk "github.com/DurkaVerder/elk-send-logs/elk"
 )
 
 func main() {
-	db, err := postgres.ConnectDB(os.Getenv("DB_URL"))
-	if err != nil {
-		elk.Log.Error("Error connecting to DB", map[string]interface{}{
-			"method": "main",
-			"action": "ConnectDB",
-			"error":  err.Error(),
-		})
-		panic(err)
-	}
+
+	elk.InitLogger(5, "catalog-service", os.Getenv("ELK_URL"))
+	ctx := context.Background()
+	elk.Log.Start(ctx, 3)
+
+	db := postgres.ConnectDB(os.Getenv("DB_URL"))
 
 	postgres := postgres.NewPostgres(db)
 
@@ -29,11 +27,19 @@ func main() {
 
 	server := server.NewServer(handlers)
 
-	server.Start(os.Getenv("PORT"))
+	go server.Start(os.Getenv("PORT"))
 
-	elk.Log.Info("Server started", map[string]interface{}{
-		"method": "main",
-		"action": "Start",
-	})
+	elk.Log.SendMsg(
+		elk.LogMessage{
+			Level:   'I',
+			Message: "Server started",
+			Fields: map[string]interface{}{
+				"method": "main",
+			},
+		})
 
+	<-ctx.Done()
+
+	elk.Log.Close()
+	postgres.Close()
 }
