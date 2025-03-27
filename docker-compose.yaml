@@ -76,6 +76,8 @@ services:
       dockerfile: Dockerfile
     container_name: auth
     environment:
+      - KAFKA_BROKER=kafka:9092
+      - KAFKA_TOPIC=notification
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - JWT_SECRET=super-puper-ultra-top-secret
       - PORT=:8089
@@ -167,6 +169,8 @@ services:
       dockerfile: Dockerfile
     container_name: order
     environment:
+      - KAFKA_BROKER=kafka:9092
+      - KAFKA_TOPIC=notification
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - PORT=:8084
       - ELK_URL=logstash:5000
@@ -188,6 +192,8 @@ services:
       dockerfile: Dockerfile
     container_name: payment
     environment:
+      - KAFKA_BROKER=kafka:9092
+      - KAFKA_TOPIC=notification
       - DB_URL=postgres://postgres:durka@postgres:5432/e-commerce-database?sslmode=disable
       - PORT=:8085
       - ELK_URL=logstash:5000
