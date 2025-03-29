@@ -1,8 +1,10 @@
 package service
 
 import (
+	"os"
 	"strconv"
 
+	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/order-service/internal/kafka/producer"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/order-service/internal/models"
 	"github.com/DurkaVerder/Scalable-E-Commerce-Platform/order-service/internal/repository"
 	elk "github.com/DurkaVerder/elk-send-logs/elk"
@@ -18,7 +20,8 @@ type Service interface {
 }
 
 type ServiceManager struct {
-	repo repository.Repository
+	producer producer.Producer
+	repo     repository.Repository
 }
 
 func NewServiceManager(repo repository.Repository) *ServiceManager {
@@ -47,6 +50,9 @@ func (s *ServiceManager) CreateOrder(userId int, products []models.Product) erro
 			})
 		return err
 	}
+
+	// go s.SendMessageToKafka("order_created", "Order created successfully")
+
 	return nil
 }
 
@@ -149,4 +155,31 @@ func (s *ServiceManager) ConvertStringToInt(num string) (int, error) {
 		return 0, err
 	}
 	return resInt, nil
+}
+
+func (s *ServiceManager) SendMessageToKafka(subject, body string) error {
+	msg := s.CreateMessage(subject, body)
+
+	if err := s.producer.SendMessage(os.Getenv("KAFKA_TOPIC"), msg); err != nil {
+		elk.Log.SendMsg(
+			elk.LogMessage{
+				Level:   'E',
+				Message: "Error sending message to Kafka",
+				Fields: map[string]interface{}{
+					"method": "SendMessageToKafka",
+					"action": "SendMessageToKafka",
+					"error":  err.Error(),
+				},
+			})
+		return err
+	}
+
+	return nil
+}
+
+func (s *ServiceManager) CreateMessage(subject, body string) models.Notification {
+	return models.Notification{
+		Subject: subject,
+		Body:    body,
+	}
 }

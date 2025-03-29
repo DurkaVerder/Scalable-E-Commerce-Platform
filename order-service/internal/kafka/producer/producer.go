@@ -13,7 +13,7 @@ import (
 
 // Producer is a wrapper around the sarama.SyncProducer to provide a more
 type Producer interface {
-	SendMessage(topic string, order models.Notification, maxRetry int) error
+	SendMessage(topic string, order models.Notification) error
 }
 
 // ProducerManager is a wrapper around the sarama.SyncProducer to provide a more
@@ -70,7 +70,7 @@ func NewProducerManager(brokers string) *ProducerManager {
 }
 
 // SendMessageForAddOrder sends a message to the Kafka topic for adding an order.
-func (p *ProducerManager) SendMessage(topic string, order models.Notification, maxRetry int) error {
+func (p *ProducerManager) SendMessage(topic string, order models.Notification) error {
 	data, err := json.Marshal(order)
 	if err != nil {
 		elk.Log.SendMsg(
@@ -85,7 +85,7 @@ func (p *ProducerManager) SendMessage(topic string, order models.Notification, m
 		return nil
 	}
 
-	for i := 0; i < maxRetry; i++ {
+	for i := 0; i < kafka.MaxRetries; i++ {
 		if err = p.sendMessage(topic, data); err == nil {
 			return nil
 		}
