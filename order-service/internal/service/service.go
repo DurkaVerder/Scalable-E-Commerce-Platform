@@ -10,6 +10,18 @@ import (
 	elk "github.com/DurkaVerder/elk-send-logs/elk"
 )
 
+const (
+	OrderStatusCreated    = "created"
+	OrderStatusProcessing = "processing"
+	OrderStatusCompleted  = "completed"
+	OrderStatusCancelled  = "cancelled"
+
+	OrderBodyCreated    = "order created successfully"
+	OrderBodyProcessing = "order is being processed"
+	OrderBodyCompleted  = "order completed"
+	OrderBodyCancelled  = "order cancelled"
+)
+
 type Service interface {
 	CreateOrder(userId int, products []models.Product) error
 	GetOrders(userId int) ([]models.Order, error)
@@ -51,7 +63,7 @@ func (s *ServiceManager) CreateOrder(userId int, products []models.Product) erro
 		return err
 	}
 
-	// go s.SendMessageToKafka("order_created", "Order created successfully")
+	go s.SendMessageToKafka(OrderStatusCreated, OrderBodyCreated)
 
 	return nil
 }
