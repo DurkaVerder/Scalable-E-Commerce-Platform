@@ -25,14 +25,14 @@ CREATE TABLE orders (
     CONSTRAINT fk_orders_users FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE order_items (
+CREATE TABLE order_products (
     id SERIAL PRIMARY KEY,
     order_id INT NOT NULL,
     product_id INT NOT NULL,
     quantity INT NOT NULL CHECK (quantity > 0),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_order_items_orders FOREIGN KEY (order_id) REFERENCES orders(id),
-    CONSTRAINT fk_order_items_products FOREIGN KEY (product_id) REFERENCES products(id),
+    CONSTRAINT fk_order_products_orders FOREIGN KEY (order_id) REFERENCES orders(id),
+    CONSTRAINT fk_order_products_products FOREIGN KEY (product_id) REFERENCES products(id),
     CONSTRAINT unique_order_product UNIQUE (order_id, product_id)
 );
 
@@ -43,14 +43,14 @@ CREATE TABLE carts (
     CONSTRAINT fk_carts_users FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE cart_items (
+CREATE TABLE cart_products (
     id SERIAL PRIMARY KEY,
     cart_id INT NOT NULL,
     product_id INT NOT NULL,
     quantity INT NOT NULL CHECK (quantity > 0),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_cart_items_carts FOREIGN KEY (cart_id) REFERENCES carts(id),
-    CONSTRAINT fk_cart_items_products FOREIGN KEY (product_id) REFERENCES products(id),
+    CONSTRAINT fk_cart_products_carts FOREIGN KEY (cart_id) REFERENCES carts(id),
+    CONSTRAINT fk_cart_products_products FOREIGN KEY (product_id) REFERENCES products(id),
     CONSTRAINT unique_cart_product UNIQUE (cart_id, product_id)
 );
 
@@ -84,7 +84,6 @@ CREATE TABLE product_categories (
     CONSTRAINT fk_product_categories_categories FOREIGN KEY (category_id) REFERENCES categories(id),
     CONSTRAINT unique_product_category UNIQUE (product_id, category_id)
 );
-
 -- CREATE INDEX idx_product_categories_category_id ON product_categories(category_id);
 -- CREATE INDEX idx_cart_items_cart_id ON cart_items(cart_id);
 -- CREATE INDEX idx_order_items_order_id ON order_items(order_id);
