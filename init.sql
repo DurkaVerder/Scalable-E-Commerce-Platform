@@ -84,6 +84,8 @@ CREATE TABLE product_categories (
     CONSTRAINT fk_product_categories_categories FOREIGN KEY (category_id) REFERENCES categories(id),
     CONSTRAINT unique_product_category UNIQUE (product_id, category_id)
 );
+
+
 -- CREATE INDEX idx_product_categories_category_id ON product_categories(category_id);
 -- CREATE INDEX idx_cart_items_cart_id ON cart_items(cart_id);
 -- CREATE INDEX idx_order_items_order_id ON order_items(order_id);
